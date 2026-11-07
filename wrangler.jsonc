@@ -1,0 +1,19 @@
+{
+  // The name MUST match the Worker already created in your Cloudflare dashboard.
+  // If your Worker is called something else, change this line to match it —
+  // otherwise the build creates a second, separate Worker.
+  "name": "wardrobe",
+
+  "compatibility_date": "2026-08-05",
+
+  // No "main" key on purpose. With assets only and no Worker script,
+  // Cloudflare serves the files straight from the edge — no cold start, no CPU billing.
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

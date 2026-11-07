@@ -1,0 +1,8 @@
+# personal closet data - never commit
+seed.json
+patch1.json
+closet-*.json
+# vendored background-removal bundle (see scripts/vendor-bgr.sh)
+public/bgr/
+# build output
+dist/

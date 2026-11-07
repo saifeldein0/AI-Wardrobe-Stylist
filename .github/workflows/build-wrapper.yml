@@ -1,0 +1,31 @@
+name: build-wrapper
+on:
+  push:
+    paths: ["wrapper/**", ".github/workflows/build-wrapper.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get WebView2 SDK
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/1.0.2592.51 -OutFile wv2.zip
+          Expand-Archive wv2.zip -DestinationPath wv2
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Build
+        shell: cmd
+        run: |
+          cd wrapper
+          rc /nologo app.rc || exit /b 1
+          cl /nologo /std:c++17 /EHsc /O2 /DUNICODE /D_UNICODE /D_WIN32_WINNT=0x0A00 main.cpp app.res /I ..\wv2\build\native\include /Fe:Wardrobe.exe /link /SUBSYSTEM:WINDOWS ..\wv2\build\native\x64\WebView2LoaderStatic.lib user32.lib gdi32.lib ole32.lib shell32.lib advapi32.lib version.lib crypt32.lib || exit /b 1
+          dir Wardrobe.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wardrobe
+          path: wrapper/Wardrobe.exe
